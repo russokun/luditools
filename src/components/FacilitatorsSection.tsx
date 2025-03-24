@@ -12,9 +12,20 @@ export default function FacilitatorsSection({
 }: FacilitatorsSectionProps) {
   console.log('Received facilitators:', facilitators); // Debug log
 
-  if (!facilitators || !Array.isArray(facilitators)) {
-    console.error('Facilitators is not an array:', facilitators);
-    return null;
+  if (!facilitators || facilitators.length === 0) {
+    console.log('No facilitators available');
+    return (
+      <section className="bg-white py-20 px-4 md:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-blue-900 text-center mb-8">
+            {title}
+          </h2>
+          <p className="text-center text-gray-600">
+            Próximamente anunciaremos nuestro equipo de facilitadores.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (

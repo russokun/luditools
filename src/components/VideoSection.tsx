@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from 'react';
-import ReactPlayer from 'react-player';
+import { useState, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+const ReactPlayer = dynamic(() => import('react-player'), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+      <div className="w-16 h-16 border-4 border-blue-800 border-t-transparent rounded-full animate-spin" />
+    </div>
+  ),
+});
 
 interface VideoSectionProps {
   videoUrl: string;
@@ -21,28 +30,28 @@ export default function VideoSection({ videoUrl, title }: VideoSectionProps) {
         )}
         
         <div className="relative aspect-video w-full max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl">
-          {isLoading && (
+          <Suspense fallback={
             <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">
               <div className="w-16 h-16 border-4 border-blue-800 border-t-transparent rounded-full animate-spin" />
             </div>
-          )}
-          
-          <ReactPlayer
-            url={videoUrl}
-            width="100%"
-            height="100%"
-            onReady={() => setIsLoading(false)}
-            controls
-            playing={false}
-            config={{
-              youtube: {
-                playerVars: {
-                  modestbranding: 1,
-                  rel: 0
+          }>
+            <ReactPlayer
+              url={videoUrl}
+              width="100%"
+              height="100%"
+              onReady={() => setIsLoading(false)}
+              controls
+              playing={false}
+              config={{
+                youtube: {
+                  playerVars: {
+                    modestbranding: 1,
+                    rel: 0
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          </Suspense>
         </div>
       </div>
     </section>

@@ -15,7 +15,19 @@ export default {
       animation: {
         'slide-up': 'slide-up 0.5s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
+        'fade-in-delay': 'fade-in 0.3s ease-out 0.2s forwards',
+        'fade-in-delay-2': 'fade-in 0.3s ease-out 0.4s forwards',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            strong: {
+              color: 'inherit',
+              fontWeight: '700'
+            }
+          }
+        }
       },
       keyframes: {
         'slide-up': {

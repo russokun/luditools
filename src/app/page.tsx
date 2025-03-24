@@ -1,7 +1,8 @@
-import { 
-  fetchFacilitators, 
-  fetchSchedule, 
-  fetchTestimonials 
+import { Suspense } from 'react';
+import {
+  fetchFacilitators,
+  fetchSchedule,
+  fetchTestimonials
 } from '@/lib/api';
 import Banner from '@/components/Banner';
 import VideoSection from '@/components/VideoSection';
@@ -17,10 +18,15 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function HomePage() {
   try {
-    // Fetch data with better error handling
+    // Fetch data with detailed error handling
     const [facilitatorsData, scheduleData, testimonialsData] = await Promise.all([
       fetchFacilitators().catch(e => {
-        console.error('Error fetching facilitators:', e);
+        console.error('Error fetching facilitators:', {
+          message: e.message,
+          status: e.response?.status,
+          data: e.response?.data
+        });
+        // Retornar un array vacío en caso de error
         return [];
       }),
       fetchSchedule().catch(e => {
@@ -32,6 +38,20 @@ export default async function HomePage() {
         return [];
       })
     ]);
+
+    // Debug logs
+    console.log('API responses:', {
+      facilitators: {
+        count: facilitatorsData.length,
+        data: facilitatorsData
+      },
+      schedule: {
+        count: scheduleData.length
+      },
+      testimonials: {
+        count: testimonialsData.length
+      }
+    });
 
     // Debug logs
     console.log('Fetched data:', {
@@ -50,28 +70,28 @@ export default async function HomePage() {
         <Banner
           title="LudiTools GameCamp 2025"
           subtitle="La experiencia formativa más innovadora en gamificación y aprendizaje lúdico"
-          brochureUrl="/brochure-2025.pdf"
+          brochureUrl="https://drive.google.com/file/d/17Is0DCs9xKBAk4aAe8VkQxQoxC5Y9PRx/view"
         />
 
         <VideoSection
-          videoUrl="https://www.youtube.com/watch?v=your-video-id"
-          title="Conoce LudiTools GameCamp"
+          videoUrl="https://youtu.be/Yt6dOByAaJE"
+          title="Conoce El GameCamp"
         />
 
         <InvitationSection
-          backgroundUrl="/images/camp-background.jpg"
-          imageUrl="/images/featured-activity.jpg"
-          text="Únete a una experiencia transformadora donde la gamificación y el aprendizaje se encuentran. Desarrolla habilidades prácticas mientras te sumerges en el mundo del diseño de experiencias lúdicas."
-          bottomTitle="¿Estás listo para el desafío?"
+         title="¡No es sólo un encuentro profesional es un llamado!"
+         text="A Todos Los Visionarios, Creadores, y disenadores de juegos serios y artefactos ludicos de nuestra region, facilitadores y facilitadoras que manejan metodologias ludicas, consultores y consultoras interesadas en innovaciones didacticas y publico en general interesado en su transformacion personal."
+         buttonText="¡Quiero participar!"
+         buttonHref="#programa"
         />
 
         <TextSection
           blocks={[
             {
-              content: "LudiTools GameCamp es más que un programa de formación. Es una comunidad de innovadores educativos, diseñadores de experiencias y facilitadores apasionados que creen en el poder del juego como herramienta de transformación."
+              content: "Es más que un programa de formación. Es una comunidad de innovadores educativos, diseñadores de experiencias y facilitadores apasionados que creen en el poder del juego como herramienta de transformación. El Evento se desarrolla en formato Open Space, donde la agenda tematica se construye de manera Colaborativa, Un espacio de encuentro, intercambio y aprendizaje."
             },
             {
-              content: "Durante una semana intensiva, aprenderás metodologías probadas, herramientas prácticas y estrategias efectivas para crear experiencias de aprendizaje memorables. Todo esto de la mano de expertos reconocidos en el campo de la gamificación educativa."
+              content: "Luditools es un Game Camp presencial cruzado por una experiencial transpersonal donde honrramos a los que jugaron antes que nosotros juegos sagrados y simbólicos, **PUEDES DICTAR UN TALLER** O VENIR COMO PARTICIPANTE. SON 5 DÍAS DE RETIRO LÚDICO QUE TRANSFORMARÁN TU PRÁCTICA DIDÁCTICA CON NUEVAS HERRAMIENTAS Y REDES DE APOYO DESDE TU SER."
             }
           ]}
           backgroundColor="white"
@@ -85,11 +105,12 @@ export default async function HomePage() {
           ctaText="¡Quiero inscribirme!"
           ctaLink="#inscripcion"
           features={[
-            "7 días de formación intensiva",
-            "Kit completo de herramientas LudiTools",
-            "Certificación oficial",
+            "5 días de formación/retiro ludico",
+            "Welcome LudiTools Pack",
+            "Alimentacion y hospedaje incluidos",
             "Acceso a la comunidad exclusiva",
-            "Mentorías post-programa"
+            "Salidas extraprogramaticas",
+            "Actividades recreativas"
           ]}
         />
 
@@ -98,17 +119,37 @@ export default async function HomePage() {
           schedules={schedule}
         />
 
-        <FacilitatorsSection
-          title="Nuestro Equipo de Facilitadores"
-          facilitators={facilitators}
-        />
-
-        {testimonials.length > 0 && (
-          <TestimonialsSection
-            title="Lo que dicen nuestros graduados"
-            testimonials={testimonials}
+        <Suspense fallback={
+          <div className="bg-white py-20 px-4 md:px-8 lg:px-12">
+            <div className="max-w-7xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-12">
+                Cargando facilitadores...
+              </h2>
+            </div>
+          </div>
+        }>
+          <FacilitatorsSection
+            title="Nuestro Equipo de Facilitadores"
+            facilitators={facilitators}
           />
-        )}
+        </Suspense>
+
+        <Suspense fallback={
+          <div className="bg-white py-20 px-4">
+            <div className="max-w-7xl mx-auto text-center">
+              <h2 className="text-3xl font-bold text-blue-900">
+                Cargando testimonios...
+              </h2>
+            </div>
+          </div>
+        }>
+          {testimonials.length > 0 && (
+            <TestimonialsSection
+              title="Lo que dicen nuestros graduados"
+              testimonials={testimonials}
+            />
+          )}
+        </Suspense>
 
         <Footer
           navigation={[

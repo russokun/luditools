@@ -19,6 +19,10 @@ export default function TextSection({
     ? 'text-cyan-200'
     : 'text-blue-800';
 
+  const processMarkdown = (text: string) => {
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  };
+
   return (
     <section className={`py-20 px-4 md:px-8 lg:px-12 ${bgClass}`}>
       <div className="max-w-5xl mx-auto">
@@ -33,9 +37,10 @@ export default function TextSection({
                 <p 
                   key={pIndex}
                   className="leading-relaxed"
-                >
-                  {paragraph}
-                </p>
+                  dangerouslySetInnerHTML={{ 
+                    __html: processMarkdown(paragraph)
+                  }}
+                />
               ))}
             </div>
           ))}

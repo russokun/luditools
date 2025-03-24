@@ -1,66 +1,33 @@
-// Strapi common types
-export type StrapiEntity<T> = {
-  id: number;
-  attributes: T;
-};
-
-export type StrapiCollection<T> = Array<StrapiEntity<T>>;
-
-export type StrapiResponse<T> = {
-  data: StrapiCollection<T>;
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+export type NormalizedImage = {
+  url: string;
+  width: number;
+  height: number;
+  alternativeText: string;
 };
 
 export type StrapiImage = {
   data: {
-    id: number;
     attributes: {
       url: string;
-      alternativeText?: string;
       width: number;
       height: number;
-    };
-  } | null;
+      alternativeText?: string;
+    }
+  }
 };
 
-export type StrapiSocialLink = {
+export type NormalizedGame = {
   id: number;
-  platform: string;
-  url: string;
-};
-
-// Strapi response types
-export type StrapiFacilitator = {
-  name: string;
-  bio: string;
-  type: string;
-  image: StrapiImage;
-  socialLinks: {
-    data: StrapiSocialLink[];
-  };
-};
-
-export type StrapiSchedule = {
-  day: string;
-  time: string;
   title: string;
-  facilitator: {
-    data: StrapiEntity<StrapiFacilitator> | null;
-  };
-  image: StrapiImage;
-};
-
-export type StrapiTestimonial = {
-  text: string;
-  author: string;
-  videoUrl: string;
+  description: string;
+  videoUrl?: string;
+  price: number;
+  discount?: number;
+  coverImage: NormalizedImage | null;
+  features: Array<{
+    title: string;
+    description: string;
+  }>;
 };
 
 export type StrapiGameFeature = {
@@ -68,45 +35,20 @@ export type StrapiGameFeature = {
   description: string;
 };
 
-export type StrapiGameReview = {
-  text: string;
-  rating: number;
-  author: string;
+export type StrapiFacilitator = {
+  username: string;
+  firstname?: string;
+  lastname?: string;
+  name?: string;
+  bio?: string;
+  type: string;
+  image?: StrapiImage;
+  socialLinks?: { data: StrapiSocialLink[] };
 };
 
-export type StrapiGame = {
-  title: string;
-  description: string;
-  videoUrl?: string;
-  price: number;
-  discount?: number;
-  bestSeller: boolean;
-  coverImage: StrapiImage;
-  images: {
-    data: Array<StrapiEntity<{
-      url: string;
-      alternativeText?: string;
-      width: number;
-      height: number;
-    }>>;
-  };
-  features: {
-    data: Array<StrapiEntity<StrapiGameFeature>>;
-  };
-  reviews: {
-    data: Array<StrapiEntity<StrapiGameReview>>;
-  };
-  facilitator: {
-    data: StrapiEntity<StrapiFacilitator> | null;
-  };
-};
-
-// Normalized types for components
-export type NormalizedImage = {
+export type StrapiSocialLink = {
+  platform: string;
   url: string;
-  alternativeText?: string;
-  width: number;
-  height: number;
 };
 
 export type NormalizedFacilitator = {
@@ -114,7 +56,7 @@ export type NormalizedFacilitator = {
   name: string;
   bio: string;
   type: string;
-  image: NormalizedImage;
+  image: NormalizedImage | null;
   socialLinks: Array<{
     platform: string;
     url: string;
@@ -126,40 +68,38 @@ export type NormalizedSchedule = {
   day: string;
   time: string;
   title: string;
-  image: NormalizedImage | null;
   facilitator?: NormalizedFacilitator;
+  image: NormalizedImage | null;
+};
+
+export type StrapiSchedule = {
+  day: string;
+  time: string;
+  title: string;
+  facilitator?: {
+    data: StrapiEntity<StrapiFacilitator>;
+  };
+  image?: StrapiImage;
 };
 
 export type NormalizedTestimonial = {
   id: number;
   text: string;
   author: string;
-  videoUrl: string;
-};
-
-export type NormalizedGame = {
-  id: number;
-  title: string;
-  description: string;
   videoUrl?: string;
-  price: number;
-  discount?: number;
-  bestSeller: boolean;
-  coverImage: NormalizedImage;
-  images: NormalizedImage[];
-  features: Array<{
-    title: string;
-    description: string;
-  }>;
-  reviews: Array<{
-    text: string;
-    rating: number;
-    author: string;
-  }>;
-  facilitator?: NormalizedFacilitator;
 };
 
-// Helper type for price calculation
+export type StrapiTestimonial = {
+  text: string;
+  author: string;
+  videoUrl?: string;
+};
+
+export type StrapiEntity<T> = {
+  id: number;
+  attributes: T;
+};
+
 export type ComputedPrice = {
   original: number;
   final: number;
