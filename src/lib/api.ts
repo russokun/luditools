@@ -51,7 +51,16 @@ export const fetchGames = async (): Promise<NormalizedGame[]> => {
             alternativeText: raw.LogoImg.alternativeText ?? raw.Name ?? ''
           }
         : null,
-      features: Array.isArray(raw.Features) ? raw.Features.map((f: any) => ({ title: f.title || '' })) : []
+      features: Array.isArray(raw.Features) ?
+        raw.Features.map((f: any) => {
+          if (typeof f === 'object' && f !== null) {
+            return {
+              title: typeof f.title === 'string' ? f.title : '',
+              description: typeof f.description === 'string' ? f.description : ''
+            };
+          }
+          return { title: '', description: '' };
+        }) : []
     }));
   } catch (error) {
     console.error('Failed to fetch games:', error);
@@ -95,9 +104,16 @@ export async function fetchGameById(id: string): Promise<NormalizedGame | null> 
       price: Number(raw.Price ?? 0),
       discount: raw.Discount != null ? Number(raw.Discount) : undefined,
       coverImage,
-      features: Array.isArray(raw.Features)
-        ? raw.Features.map((f: any) => ({ title: f.title || '' }))
-        : []
+      features: Array.isArray(raw.Features) ?
+        raw.Features.map((f: any) => {
+          if (typeof f === 'object' && f !== null) {
+            return {
+              title: typeof f.title === 'string' ? f.title : '',
+              description: typeof f.description === 'string' ? f.description : ''
+            };
+          }
+          return { title: '', description: '' };
+        }) : []
     };
   } catch (error: any) {
     console.error(`fetchGameById(${id}) error:`, error.response?.data || error.message);

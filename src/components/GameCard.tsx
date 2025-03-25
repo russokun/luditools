@@ -1,8 +1,8 @@
 'use client';
 
-import { type FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { type FC } from 'react';
 import { NormalizedGame } from '@/types';
 import { calculatePrice } from '@/lib/api';
 
@@ -11,79 +11,46 @@ interface GameCardProps {
 }
 
 const GameCard: FC<GameCardProps> = ({ game }) => {
-  if (!game) return null;
-
-  const priceInfo = calculatePrice(game.price, game.discount);
-
-  const renderText = (value: unknown): string => {
-    if (typeof value === 'string') return value;
-    if (
-      typeof value === 'object' &&
-      value !== null &&
-      Array.isArray((value as any).children)
-    ) {
-      return (value as any).children
-        .map((child: any) => (typeof child === 'string' ? child : child.text ?? ''))
-        .join('');
-    }
-    return '';
-  };
+  const { original, final, hasDiscount, discountPercentage } = calculatePrice(game.price, game.discount);
 
   return (
-    <article className="bg-white rounded-xl shadow-lg p-4 transform hover:scale-105 transition-transform duration-300">
-      <Link href={`/tienda/${game.id}`} className="block">
-        {/* Imagen */}
-        <div className="w-full h-48 relative bg-gray-100 mb-4 rounded-lg overflow-hidden">
-          {game.coverImage ? (
-            <Image
-              src={game.coverImage.url}
-              alt={renderText(game.title)}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-gray-400">Sin imagen</span>
-            </div>
+    <Link href={`/tienda/${game.id}`} className="block bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+      <div className="relative h-56 bg-gray-100">
+        {game.coverImage ? (
+          <Image
+            src={game.coverImage.url}
+            alt={typeof game.title === 'string' ? game.title : 'Juego'}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400">Sin imagen</div>
+        )}
+      </div>
+
+      <div className="p-4 space-y-2">
+        <h3 className="text-lg font-semibold text-blue-900 line-clamp-2">
+          {typeof game.title === 'string' ? game.title : 'Sin título'}
+        </h3>
+        <p className="text-gray-600 text-sm line-clamp-2">
+          {typeof game.description === 'string' ? game.description : ''}
+        </p>
+
+        <div className="flex items-baseline gap-2 mt-2">
+          {hasDiscount && <span className="text-gray-400 line-through text-sm">USD {original}</span>}
+          <span className="text-xl font-bold text-blue-500">USD {final}</span>
+          {hasDiscount && (
+            <span className="ml-auto bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded">
+              -{discountPercentage}% OFF
+            </span>
           )}
         </div>
 
-        {/* Info */}
-        <div className="space-y-3">
-          <h3 className="text-xl font-bold text-blue-900 line-clamp-2">
-            {renderText(game.title)}
-          </h3>
-          <p className="text-gray-600 text-sm line-clamp-2">
-            {renderText(game.description)}
-          </p>
-
-          {/* Precio */}
-          <div className="flex items-center gap-2">
-            {priceInfo.hasDiscount && (
-              <span className="text-lg text-gray-400 line-through">
-                ${priceInfo.original.toLocaleString()}
-              </span>
-            )}
-            <span className="text-2xl font-bold text-blue-800">
-              ${priceInfo.final.toLocaleString()}
-            </span>
-            {priceInfo.hasDiscount && (
-              <span className="text-sm text-green-600 font-semibold">
-                {priceInfo.discountPercentage}% OFF
-              </span>
-            )}
-          </div>
-
-          {/* Botón */}
-          <div className="pt-2">
-            <span className="block w-full bg-blue-800 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-center">
-              Ver detalles
-            </span>
-          </div>
-        </div>
-      </Link>
-    </article>
+        <button className="mt-4 w-full bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-orange-600 transition">
+          Ver más
+        </button>
+      </div>
+    </Link>
   );
 };
 

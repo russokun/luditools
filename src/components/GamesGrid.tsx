@@ -9,8 +9,10 @@ interface GamesGridProps {
 }
 
 const GamesGrid: FC<GamesGridProps> = ({ games }) => {
-  console.log('GamesGrid received games:', JSON.stringify(games, null, 2));
-  if (games.length === 0) {
+  // Validar que games sea un array antes de operar con él
+  const validGames = Array.isArray(games) ? games : [];
+  
+  if (validGames.length === 0) {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl text-gray-600">
@@ -25,11 +27,16 @@ const GamesGrid: FC<GamesGridProps> = ({ games }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-      {games.map((game) => (
-        <div key={game.id} className="w-full">
-          <GameCard game={game} />
-        </div>
-      ))}
+      {validGames.map((game) => {
+        if (typeof game === 'object' && game !== null && 'id' in game) {
+          return (
+            <div key={game.id} className="w-full">
+              <GameCard game={game} />
+            </div>
+          );
+        }
+        return null;
+      })}
     </div>
   );
 };

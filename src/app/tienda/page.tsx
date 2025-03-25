@@ -14,8 +14,9 @@ function LoadingGrid() {
 export default async function TiendaPage() {
   try {
     const games = await fetchGames();
-    console.log('Tienda page fetched games:', games);
-
+    // Validar que games sea un array antes de pasarlo
+    const validGames = Array.isArray(games) ? games : [];
+    
     return (
       <main className="min-h-screen bg-gray-50">
         {/* Header */}
@@ -34,7 +35,7 @@ export default async function TiendaPage() {
         <section className="py-16 px-4 md:px-8 lg:px-12">
           <div className="max-w-7xl mx-auto">
             <Suspense fallback={<LoadingGrid />}>
-              <GamesGrid games={games} />
+              <GamesGrid games={validGames} />
             </Suspense>
           </div>
         </section>
